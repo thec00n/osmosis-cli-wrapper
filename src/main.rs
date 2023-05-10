@@ -197,6 +197,8 @@ fn get_tx_data(tx_hash: &str) {
     if output.status.success() {
         let stdout = str::from_utf8(&output.stdout).unwrap();
 
+        println!("{}", stdout);
+
         let mut parsed_data: Data = serde_json::from_str(stdout).unwrap_or_else(|error| {
             panic!("Failed to parse JSON: {}", error);
         });
@@ -234,20 +236,33 @@ fn summarize_events(mut events: Vec<Event>, encoding: bool) -> String {
         if event.event_type != "tx" {
             events_short += format!("--> {}( ", event.event_type).as_str();
             for attribute in &mut event.attributes {
-                let value = &attribute.value;
+                let mut value = &attribute.value;
                 let key = &attribute.key;
 
                 if encoding {
                     let decoded_value = decode(&attribute.value);
                     let decoded_key = decode(&attribute.key);
-                    events_short += format!(
-                        "{}: {}, ",
-                        String::from_utf8_lossy(&decoded_key).into_owned(),
-                        String::from_utf8_lossy(&decoded_value).into_owned()
-                    )
-                    .as_str();
+
+                    let decoded_value_s = String::from_utf8_lossy(&decoded_value).into_owned();
+                    let decoded_key_s = String::from_utf8_lossy(&decoded_key).into_owned();
+
+                    let contract_name =
+                        get_contract_name(decoded_value_s.as_str()).unwrap_or("".to_owned());
+                    if !contract_name.is_empty() {
+                        let formated = format!("{} ({})", decoded_value_s, contract_name);
+                        events_short += format!("{}: {}, ", decoded_key_s, formated).as_str();
+                    } else {
+                        events_short +=
+                            format!("{}: {}, ", decoded_key_s, decoded_value_s).as_str();
+                    }
                 } else {
-                    events_short += format!("{}: {}, ", key, value).as_str();
+                    let contract_name = get_contract_name(value).unwrap_or("".to_owned());
+                    if !contract_name.is_empty() {
+                        let formated = format!("{} ({})", value, contract_name);
+                        events_short += format!("{}: {}, ", key, formated).as_str();
+                    } else {
+                        events_short += format!("{}: {}, ", key, value).as_str();
+                    }
                 }
             }
             events_short.truncate(events_short.len() - 2);
@@ -287,4 +302,25 @@ fn get_contract_address(contract_name: &str) -> String {
         .as_str()
         .map(|s| s.to_owned())
         .expect("Invalid contract name")
+}
+
+fn get_contract_name(contract_address: &str) -> Option<String> {
+    let mut file = File::open(CONTRACTS).expect("Unable to open file");
+    let mut contents = String::new();
+    file.read_to_string(&mut contents)
+        .expect("Unable to read file");
+
+    let json: Value = serde_json::from_str(&contents).expect("Unable to parse JSON");
+
+    if let Some(map) = json.as_object() {
+        for (key, value) in map.iter() {
+            if let Some(address) = value.as_str() {
+                if address == contract_address {
+                    return Some(key.to_owned());
+                }
+            }
+        }
+    }
+
+    None
 }
