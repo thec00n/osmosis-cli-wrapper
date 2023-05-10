@@ -1,0 +1,11 @@
+{
+    "addressprovider": "osmo1wlm6dc0vnncu2v5z26rv97plmlkmalm84uwqatrlftc4gmp8ahgqs6r4py",
+    "redbank": "osmo1dl4rylasnd7mtfzlkdqn2gr0ss4gvyykpvr6d7t5ylzf6z535n9s5jjt8u",
+    "incentives": "osmo1zyz57xf82963mcsgqu3hq5y0h9mrltm4ttq2qe5mjth9ezp3375qe0sm7d",
+    "oracle": "osmo1khe29uw3t85nmmp3mtr8dls7v2qwsfk3tndu5h4w5g2r5tzlz5qqarq2e2",
+    "rewardscollector": "osmo1u5pcjue4grmg8lh7xrz2nvpy79xlzknwqkczfkyeyx9zzzj76tpq4tgrcs",
+    "swapper": "osmo183uu809nq80xuh0r86dkadq9djza6ln5cf5hmszt6zcfdy454chq3dcgm4",
+    "zapper": "osmo1m77x80a5rgsdw3ak0hmxkhzltlh2qf3hjdu24fsnl9v3ekhvdugsmy94uh",
+    "creditManager": "osmo15ywk53ck3wp6tnqgedfd8cnfx7fuhz9dr583hw8scp0xjgw46m0sf3kyyp",
+    "accountNft": "osmo1ye2rntzz9qmxgv7eg09supww6k6xs0y0sekcr3x5clp087fymn4q3y33s4"
+}
