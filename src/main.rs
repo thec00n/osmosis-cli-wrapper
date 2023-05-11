@@ -37,6 +37,7 @@ struct Data {
     events: Vec<Event>,
     tx: Tx,
     logs: Vec<Log>,
+    txhash: String,
 }
 
 #[derive(Debug, Deserialize, Clone)]
@@ -82,7 +83,7 @@ fn main() {
             arg!(--cmd <command>)
                 .required(true)
                 .takes_value(true)
-                .help("Command to execute: execute|query"),
+                .help("Command to execute: execute|query|analyze"),
         )
         .arg(
             arg!(--contract <contract_name>)
@@ -125,7 +126,7 @@ fn main() {
             amount,
         ),
         "query" => query_contract(get_contract_address(contract_name), get_json(json_path)),
-        "get_tx_events" => {
+        "analyze" => {
             if tx_hash.is_empty() {
                 println!("Need a tx hash to get events");
             } else {
@@ -197,36 +198,41 @@ fn get_tx_data(tx_hash: &str) {
     if output.status.success() {
         let stdout = str::from_utf8(&output.stdout).unwrap();
 
-        println!("{}", stdout);
-
         let mut parsed_data: Data = serde_json::from_str(stdout).unwrap_or_else(|error| {
             panic!("Failed to parse JSON: {}", error);
         });
 
-        let sender = parsed_data.tx.body.messages[0].sender.clone();
-        let messages = parsed_data.tx.body.messages;
-        let events_short: String = summarize_events(parsed_data.events, true);
-        let logs_short: String = summarize_events(parsed_data.logs[0].events.clone(), false);
-
-        println!("--> Sender <--");
-        println!("{}", sender);
-
-        println!("--> Messages <--");
-        for message in messages {
-            let json_str = serde_json::to_string_pretty(&message).unwrap();
-            println!("Message:\n{}", json_str);
-        }
-
-        println!("--> Events <--");
-        println!("{}", events_short);
-
-        println!("--> Logs <--");
-        println!("{}", logs_short);
+        print_tx_details(parsed_data);
     } else {
         // Handle command execution failure
         let stderr = str::from_utf8(&output.stderr).unwrap();
         eprintln!("Command execution failed: {}", stderr);
     }
+}
+
+fn print_tx_details(data: Data) {
+    let sender = data.tx.body.messages[0].sender.clone();
+    let messages = data.tx.body.messages;
+    let events_short: String = summarize_events(data.events, true);
+    let logs_short: String = summarize_events(data.logs[0].events.clone(), false);
+
+    println!("___ Tx hash ___");
+    println!("{}", data.txhash);
+
+    println!("___ Sender ___");
+    println!("{}", sender);
+
+    println!("___ Messages ___");
+    for message in messages {
+        let json_str = serde_json::to_string_pretty(&message).unwrap();
+        println!("Message:\n{}", json_str);
+    }
+
+    println!("___ Events ___");
+    println!("{}", events_short);
+
+    println!("___  Logs ___ ");
+    println!("{}", logs_short);
 }
 
 fn summarize_events(mut events: Vec<Event>, encoding: bool) -> String {

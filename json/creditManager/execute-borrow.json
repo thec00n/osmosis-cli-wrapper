@@ -1,0 +1,13 @@
+{
+    "update_credit_account": {
+        "account_id": "9",
+        "actions": [
+            {
+                "borrow": {
+                    "denom": "uosmo",
+                    "amount": "100"
+                }
+            }
+        ]
+    }
+}
