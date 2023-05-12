@@ -1,5 +1,3 @@
 {
-    "total_debt_shares": {
-        "denom": "uosmo"
-    }
+    "total_debt_shares": "uosmo"
 }
