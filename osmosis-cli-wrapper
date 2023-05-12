@@ -1,1 +1,1 @@
-./target/debug/osmosis-cli-wrapper "$@"
+./target/release/osmosis-cli-wrapper "$@"

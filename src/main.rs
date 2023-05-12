@@ -83,19 +83,19 @@ fn main() {
             arg!(--cmd <command>)
                 .required(true)
                 .takes_value(true)
-                .help("Command to execute: execute|query|analyze"),
+                .help("command to execute: execute|query|analyze"),
         )
         .arg(
             arg!(--contract <contract_name>)
                 .required(false)
                 .takes_value(true)
-                .help("Name of the contract to execute or query"),
+                .help("name of the contract to execute or query"),
         )
         .arg(
             arg!(--json <file>)
                 .required(false)
                 .takes_value(true)
-                .help("Json file that contains the message"),
+                .help("json file that contains the message"),
         )
         .arg(
             arg!(--amount <number_denom>)
@@ -134,7 +134,7 @@ fn main() {
             }
         }
 
-        _ => println!("Cmd should be either query or execute"),
+        _ => println!("Cmd should be either query, execute or analyze"),
     }
 }
 
