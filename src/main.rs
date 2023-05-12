@@ -166,7 +166,7 @@ fn execute_tx(contract_address: String, json_str: String, amount: String) {
 
     let output = cmd.output().expect("Failed to execute command");
 
-    print_result(output);
+    print_result(output, json_str);
 }
 
 fn query_contract(contract_name: String, query_json: String) {
@@ -182,7 +182,7 @@ fn query_contract(contract_name: String, query_json: String) {
         .output()
         .expect("Failed to execute command");
 
-    print_result(output);
+    print_result(output, query_json);
 }
 
 fn get_tx_data(tx_hash: &str) {
@@ -285,15 +285,17 @@ fn decode(encoded: &str) -> Vec<u8> {
     }
 }
 
-fn print_result(output: Output) {
+fn print_result(output: Output, json_str: String) {
     let stdout_str = String::from_utf8(output.stdout).unwrap();
     let stderr_str = String::from_utf8(output.stderr).unwrap();
+
+    println!("Input: \n {}\n", json_str);
     if let Ok(json) = serde_json::from_str::<Value>(&stdout_str) {
-        println!("{}", serde_json::to_string_pretty(&json).unwrap());
+        println!("Output:\n{}", serde_json::to_string_pretty(&json).unwrap());
     } else if !stderr_str.is_empty() {
-        println!("stderr:\n{}", stderr_str);
+        println!("Error:\n{}", stderr_str);
     } else {
-        println!("stdout:\n{}", stdout_str);
+        println!("Output:\n{}", stdout_str);
     }
 }
 
